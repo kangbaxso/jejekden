@@ -34,6 +34,11 @@ if [ ! -x ./krig ]; then
 fi
 
 echo "[*] cek hardware:"
+if command -v nvidia-smi >/dev/null 2>&1; then
+  nvidia-smi --query-gpu=name,driver_version,compute_cap --format=csv,noheader 2>/dev/null | sed 's/^/  GPU : /' || echo "  nvidia-smi ada tapi gagal query"
+else
+  echo "  !! nvidia-smi TIDAK ADA — driver NVIDIA belum terpasang/terload"
+fi
 ./krig --list-devices || true
 
 echo "[*] konek ${POOL} sebagai ${WORKER}"
