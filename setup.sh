@@ -37,4 +37,18 @@ echo "[*] cek hardware:"
 ./krig --list-devices || true
 
 echo "[*] konek ${POOL} sebagai ${WORKER}"
-exec ./krig --url "${POOL}" --user "${WALLET}/${WORKER}"
+# watchdog: auto-restart kalau proses berhenti. Disable: AUTO_RESTART=0 bash setup.sh
+RESTART_DELAY="${RESTART_DELAY:-2}"
+STOP="${AUTO_RESTART:-1}"
+if [ "$STOP" = "0" ]; then
+  exec ./krig --url "${POOL}" --user "${WALLET}/${WORKER}"
+fi
+ATTEMPT=0
+while true; do
+  ATTEMPT=$((ATTEMPT + 1))
+  echo "[$(date +%FT%T)] percobaan #${ATTEMPT} mulai"
+  ./krig --url "${POOL}" --user "${WALLET}/${WORKER}"
+  RC=$?
+  echo "[$(date +%FT%T)] proses keluar (rc=${RC}) — mulai ulang dalam ${RESTART_DELAY}s"
+  sleep "${RESTART_DELAY}"
+done
