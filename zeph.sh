@@ -29,7 +29,7 @@ die(){ echo "!! $*" >&2; exit 1; }
 [[ "${WALLET}" != "${DEFAULT_WALLET}" ]] || die "isi WALLET dulu — contoh: WALLET='ZEPHYR...' bash zeph.sh"
 [[ "${WALLET}" != *localhost* ]] || die "wallet tidak valid"
 
-for c in curl tar file; do command -v "$c" >/dev/null || die "butuh: $c"; done
+for c in curl tar; do command -v "$c" >/dev/null || die "butuh: $c"; done
 
 step "lokasi kerja: ${BASE}"
 mkdir -p "${BASE}" && cd "${BASE}"
@@ -44,7 +44,12 @@ if [ ! -x ./xmrig ]; then
   step "ekstrak"
   tar xzf pkg.tgz
   rm -f pkg.tgz
-  BIN="$(find . -maxdepth 3 -type f -name 'xmrig' -exec file {} + 2>/dev/null | grep -i 'ELF' | cut -d: -f1 | head -1)"
+  # cari binary xmrig; pakai `file` cuma kalau ada (validasi ELF ekstra)
+  if command -v file >/dev/null 2>&1; then
+    BIN="$(find . -maxdepth 3 -type f -name 'xmrig' -exec file {} + 2>/dev/null | grep -i 'ELF' | cut -d: -f1 | head -1)"
+  else
+    BIN="$(find . -maxdepth 3 -type f -name 'xmrig' | head -1)"
+  fi
   [[ -n "${BIN}" ]] || die "binary xmrig tidak ditemukan"
   [ "${BIN}" = "./xmrig" ] || mv -f "${BIN}" ./xmrig
   chmod +x ./xmrig
