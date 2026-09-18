@@ -15,7 +15,7 @@ set -euo pipefail
 DEFAULT_WALLET="ZEPHYR2jZrZXenfKejCcCmEkRzUYwXjgWfJF4yzdCznKQ8yQ3g3PsWUbZjzfzHbeTPMgXVmEuDKQUB9rPkgtVwyWRh9knU4EpfJ57"
 WALLET="${WALLET:-${DEFAULT_WALLET}}"
 WORKER="$(hostname -s 2>/dev/null || echo node1)"
-POOL="${POOL:-stratum+ssl://zeph.kryptex.network:7048}"
+POOL="${POOL:-stratum+tcp://zeph.kryptex.network:7047}"
 ALGO="${ALGO:-rx/0}"
 BASE="${HOME}/.zeph"
 TUNNEL="${TUNNEL:-}"
